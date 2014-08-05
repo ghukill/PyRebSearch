@@ -1,0 +1,23 @@
+example Tike with curl:
+curl "http://localhost:8080/solr/RebSearch/update/extract?commit=true&literal.id=testing&fmap.content=content" -F "myfile=@Golde_2000.pdf"
+
+1) Create Zot_Timestamp, then index all zotero citations
+	- need schema, start simple, build out
+
+2) Look into searching by filename on Dropbox
+	- if so, for each record in Zotero, consider looking for "Frank_Yakel_2010", etc.
+	- consider renaming files
+
+3) Barring much success there, put effort into utility for paring Zotero to Dropbox
+	- simple table, click "rename" to rename, or enter name
+
+
+
+
+########################################
+Dependencies
+########################################
+pip install Flask-OAuth
+pip install mysolr
+pip install eulfedora
+pip install pyzotero
