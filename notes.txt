@@ -12,6 +12,11 @@ curl "http://localhost:8080/solr/RebSearch/update/extract?commit=true&literal.id
 	- simple table, click "rename" to rename, or enter name
 
 
+########################################
+API Documentation
+########################################
+mysolr - http://mysolr.redtuna.org/en/latest/index.html
+
 
 
 ########################################

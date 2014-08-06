@@ -1,0 +1,63 @@
+INFO:urllib3.connectionpool:Starting new HTTPS connection (1): api.dropbox.com
+DEBUG:urllib3.connectionpool:"GET /1/account/info HTTP/1.1" 200 None
+DEBUG:urllib3.connectionpool:"GET /1/account/info HTTP/1.1" 200 None
+INFO:urllib3.connectionpool:Resetting dropped connection: api.dropbox.com
+DEBUG:urllib3.connectionpool:"POST /1/oauth2/token HTTP/1.1" 200 None
+DEBUG:urllib3.connectionpool:"GET /1/account/info HTTP/1.1" 200 None
+DEBUG:urllib3.connectionpool:"GET /1/metadata/auto/articles?file_limit=25000&list=true&include_deleted=False&include_media_info=False HTTP/1.1" 404 None
+ERROR:RebSearch:Exception on /dropboxTesting [GET]
+Traceback (most recent call last):
+  File "/usr/local/lib/python2.7/dist-packages/flask/app.py", line 1817, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/usr/local/lib/python2.7/dist-packages/flask/app.py", line 1477, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/usr/local/lib/python2.7/dist-packages/flask/app.py", line 1381, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/usr/local/lib/python2.7/dist-packages/flask/app.py", line 1475, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/usr/local/lib/python2.7/dist-packages/flask/app.py", line 1461, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/var/opt/projects/RebSearch/RebSearch/views.py", line 132, in dropboxTesting
+    articles = dropboxHandle.metadata('/articles')
+  File "/usr/local/lib/python2.7/dist-packages/dropbox-2.1.0-py2.7.egg/dropbox/client.py", line 744, in metadata
+    return self.rest_client.GET(url, headers)
+  File "/usr/local/lib/python2.7/dist-packages/dropbox-2.1.0-py2.7.egg/dropbox/rest.py", line 311, in GET
+    return cls.IMPL.GET(*n, **kw)
+  File "/usr/local/lib/python2.7/dist-packages/dropbox-2.1.0-py2.7.egg/dropbox/rest.py", line 246, in GET
+    return self.request("GET", url, headers=headers, raw_response=raw_response)
+  File "/usr/local/lib/python2.7/dist-packages/dropbox-2.1.0-py2.7.egg/dropbox/rest.py", line 227, in request
+    raise ErrorResponse(r, r.read())
+ErrorResponse: [404] u"Path '/articles' not found"
+DEBUG:urllib3.connectionpool:"GET /1/account/info HTTP/1.1" 200 None
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTPS connection (1): api.zotero.org
+DEBUG:requests.packages.urllib3.connectionpool:"GET /users/625570/items?content=json&limit=1&order=dateModified&key=KveGrIA6DcBMpjddaRTlh5on HTTP/1.1" 200 1444
+DEBUG:urllib3.connectionpool:"GET /1/account/info HTTP/1.1" 200 None
+RebSearch searches...
+                                                            
+            -.+:///`                         `///:+.-            
+          `-s:/  `./+/-                   -/+/.`  /:s-`          
+        `++/s+:      `:+/`             `/+:`      :+s/++`        
+       -o++:ss.         .//.         .//.         .ss:++o-       
+    .+oss:+-+h`           `::.     .-:`           `h+-+:sso+.    
+    smhos.y::h              `-:` `:-`              h::y.sohms    
+    hdsss`s/-h                `---`                h-/s`sssdh    
+    dd+s+ oo.s                  :                  s.oo /s+dm    
+   .Ny/o+`oo-+                  :                  +-oo`+o/yN.   
+   :Mo+:+.+o/:                  :                  :/o+.+:+oM:   
+   +m:+-/-:o+.                  :                  .+o--/-+:N+   
+   sd-:-:/.+o                   :                   o+./:-::ms   
+   dd:.:.+`:+                   :                   +:`+.:.:dd   
+   ms:./`+../                   :                   /..+`/.:sm   
+  .h/..: /-`:```                :                ```:`-/ :..+h.  
+  /m/``: /`.-////-.`            :            `.-////-.`/ :``/m/  
+  /N-  : ----.-:/+so+-`         :         `-+oso::-.---- -  -N/  
+  +d` `:...-://::/oooyo+-`      :      `-+oyooo/:://:--..:` `d+  
+  sd .:.--::--:/++/+ssydNh/`    :    `/hNdyss+/++/:--::--.:. ds  
+ `hh-:://:::/+/::///:/oosdNd/`  :  `/dNdsoo/:///::/+/::://::-hh` 
+ .sh++////+/://+::///::/:/+ohs- : -sho+/:/::///::///:/+////+ohs. 
+  -:+yhyssoo+:::/:-:/-.-:..-.:o/:/o:.-..:-.-/:-:/:::+oossyhyo:-  
+       .-:/syhyso+/-.-.```   `./y/.`   ```.-.-/+osyhys/:-.       
+              .-:+syyo+/:.``-smMMMms-``.:/+oyys+:-.              
+                     .--+syyysososssyyys+:-.                     
+                           ``       ``                             
+	

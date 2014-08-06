@@ -19,6 +19,8 @@ import hashlib
 
 # dropbox
 import dropbox
+import dropboxHandles
+from dropbox.client import DropboxOAuth2Flow, DropboxClient
 
 # eulfedora
 import eulfedora
@@ -48,23 +50,14 @@ from solrHandles import solr_handle
 # Fedora
 from fedoraHandles import fedora_handle
 
-# Dropbox
-import dropboxHandles
-
 # session data secret key
 ####################################
 app.secret_key = 'RebSearch'
 ####################################
 
-# dropbox app info
+
+# Dropbox Login
 ############################################################################################################
-'''
-Temporary Dropbox keys - will move to DB perhaps, somewhere safe and accessible
-'''
-
-
-from dropbox.client import DropboxOAuth2Flow, DropboxClient
-
 @app.route('/dropboxLogin')
 def dropboxLogin():
     if not 'access_token' in session:
@@ -91,6 +84,8 @@ def get_auth_flow():
     return DropboxOAuth2Flow(DROPBOX_APP_KEY, DROPBOX_APP_SECRET, redirect_uri,
                              session, 'dropbox-auth-csrf-token')
 
+
+# General
 ############################################################################################################
 
 # home
@@ -103,6 +98,8 @@ def home():
         access_token = session['access_token']
         client = dropbox.client.DropboxClient(access_token)
         account_info = client.account_info()
+
+        print ZOTERO_USER_ID
 
         return render_template('index.html',account_info=account_info,ZOTERO_USER_ID=ZOTERO_USER_ID)
 
@@ -117,14 +114,39 @@ def logout():
         return "Ya'll come back now, ya hear!"
 
 
+# Zotero
+##############################################################################################################################
 
 @app.route('/zoteroTesting')
 def zoteroTesting():
-    goober = zot.items(limit=1,order="dateModified")    
+    goober = zot.items(limit=1,order="dateModified") 
+    last_modified = utilities.getLastZotSyncDate()   
 
-    return render_template('zoteroTesting.html',goober=goober)
+    return render_template('zoteroTesting.html',goober=goober,last_modified=last_modified)
 
 
+@app.route('/syncZotero')
+def syncZotero():
+    '''
+    1) Check last Zot-Sync date in Solr
+    2) Retrieve all items from Zotero modified after that date
+    3) For each
+        a) get metadata in useful form
+        b) create / update object in Fedora (PID = RebSearch_Account:ZoteroID)
+    4) Update last Zot-Synce date in Solr
+    '''
+
+    # get last sync date
+    LastZotSyncDate = utilities.getLastZotSyncDate()
+
+
+    
+
+    return render_template('syncZotero.html',goober=goober)
+
+
+# Dropbox
+##############################################################################################################################
 @app.route('/dropboxTesting')
 def dropboxTesting():
 

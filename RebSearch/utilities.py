@@ -1,6 +1,12 @@
+# RebSearch
+from sensitive import *
+from RebSearch.solrHandles import solr_handle
+
 # utilities
 import datetime
 import hashlib
+
+
 
 escapeRules = {'+': r'\+',
 			   '-': r'\-',
@@ -53,3 +59,16 @@ def checkPinCreds(pin_package,check_type):
 			return True
 		else:
 			return False
+
+def getLastZotSyncDate():	
+		#evaluate solr response string as python dictionary
+		LastZotSync = solr_handle.search(q="id:LastZotSync")
+		return LastZotSync.documents[0]['last_modified'].encode('utf-8')		
+
+def updateLastZotSyncDate():		
+
+		#Updated LastFedoraIndex in Solr
+		print "*** Updating LastFedoraIndex in Solr ***"
+		update = [{'id':'LastZotSync','last_modified':'NOW'}]
+		result = solr_handle.update(update,'json',commit=True)
+		print result
