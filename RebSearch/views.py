@@ -50,6 +50,8 @@ from solrHandles import solr_handle
 # Fedora
 from fedoraHandles import fedora_handle
 
+
+
 # session data secret key
 ####################################
 app.secret_key = 'RebSearch'
@@ -218,6 +220,12 @@ def createFedZotObject(zot_citation):
 	# save constructed object
 	newDS.save()
 	
+# function to create / update Fed object from Zot citation
+def updateFedZotObject(zot_citation):
+	'''
+	Consider making a function to update the JSON found in Fedora objects if the Zotero object changes.
+	'''
+	pass
 
 
 # Dropbox
@@ -238,7 +246,125 @@ def dropboxTesting():
 '''
 1) First task, index Zotero Citations 
 2) Iterate through Dropbox items once files have been renamed, had full-text to Zotero Citation document
+{
+DOI: "10.1300/J121v17n01_14",
+itemType: "journalArticle",
+extra: "",
+seriesText: "",
+series: "",
+abstractNote: "Abstract After a brief overview of the digitization activities at Florida Atlantic University Libraries, this article describes one project in detail, concentrating on various types of cooperation it reflects.",
+archive: "",
+title: "Cooperative Dimensions of a Digitization Project",
+ISSN: "0737-7797",
+archiveLocation: "",
+etag: "1b429c680e173251b76df09bfa2c64ef",
+journalAbbreviation: "",
+issue: "1-2",
+seriesTitle: "",
+updated: "Fri, 26 Apr 2013 18:46:03 UTC",
+tags: [ ],
+accessDate: "2013-04-26 18:46:03",
+libraryCatalog: "Taylor and Francis+NEJM",
+volume: "17",
+callNumber: "",
+key: "IS3EXV83",
+date: "2004",
+pages: "175-185",
+group_id: "341312",
+shortTitle: "",
+language: "",
+rights: "",
+url: "http://www.tandfonline.com/doi/abs/10.1300/J121v17n01_14",
+publicationTitle: "Resource Sharing & Information Networks",
+creators: [
+{
+lastName: "Adaryukov",
+creatorType: "author",
+firstName: "Andrew"
+}
+]
+}
 '''
+
+@app.route('/fullSolrIndex')
+def fullSolrIndex():
+	pass
+	# get all Zotero citation objects with Risearch	
+	# Eulfedora get_subjects approach, could just as easily use sparql_query
+	zot_citations = fedora_handle.risearch.get_subjects("fedora-rels-ext:isMemberOfCollection","fedora:RebSearch:collection-ZoteroCitation")	
+
+	# for each, get ZOTJSON datastream, index in Solr /RebSearch core
+	count = 0
+	for zot_citation in zot_citations:
+		print "Indexing {zot_citation}".format(zot_citation=zot_citation)		
+		obj_handle = fedora_handle.get_object(zot_citation)
+		zot_json = obj_handle.getDatastreamObject('ZOTJSON')
+		zot_dict = json.loads(zot_json.content)		
+
+		# pop lists		
+		if "creators" in zot_dict:			
+			creators_popped = zot_dict.pop('creators')
+		if "tags" in zot_dict:			
+			tags_popped = zot_dict.pop('tags')		
+		
+
+		# catch stragglers and convert integers
+		for key in zot_dict:
+			if type(zot_dict[key]) == "string":
+				zot_dict.pop(key)
+			# if type(zot_dict[key]) == "int":
+			# 	zot_dict[key] = str(zot_dict[key])
+		
+
+		# prefix with "zot_" and encode in utf-8
+		try:			
+			prefixed_zot_citation = {"zot_"+str(key):zot_dict[key].encode('utf-8').strip() for key in zot_dict}
+		except:
+			fhand = open("errors.txt","a")
+			fhand.write("Could not encode this one: {key}".format(key=zot_dict[key]))
+			fhand.close()
+
+		# re-add lists
+		# creators
+		if "creators_popped" in locals() and creators_popped != []:
+			# creator_count = 1
+			# creator_list = []
+			# for creator in creators_popped:
+			# 	try:
+			# 		creator_list.append("({lastName},{firstName},{creatorType},{order})".format(lastName=creator['lastName'],firstName=creator['firstName'],creatorType=creator['creatorType'],order=str(creator_count)))					
+			# 	except:
+			# 		print "Could not add author"
+			# prefixed_zot_citation['zot_creators'] = creator_list			
+			prefixed_zot_citation['zot_creators'] = json.dumps(creators_popped)
+		
+		#tags		
+		if "tags_popped" in locals() and tags_popped != []:
+			# tag_list = []
+			# for tag in tags_popped:
+			# 	try:
+			# 		tag_list.append("({tag},{type})".format(tag=tag['tag'],type=tag['type']))					
+			# 	except:
+			# 		print "Could not add tag"
+			# prefixed_zot_citation['zot_tags'] = tag_list					
+			prefixed_zot_citation['zot_tags'] = json.dumps(tags_popped)
+		
+		# set solr ID		
+		prefixed_zot_citation['id'] = prefixed_zot_citation['zot_key']		
+
+	# 	# index in Solr		
+		print solr_handle.update([prefixed_zot_citation], 'json', commit=False).raw_content
+
+		# hard break
+		# count += 1
+		# if count == 10:
+		# 	break
+
+	# # Finally, commit changes
+	print solr_handle.commit()
+
+	return "finished with Solr indexing"
+
+
 
 ######################################################
 # Catch all - DON'T REMOVE
