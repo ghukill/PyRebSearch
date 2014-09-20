@@ -109,7 +109,7 @@
 
    <!--uncomment this to create hash id based on linkURL, then linkTitle-->
    <!-- read more here: http://www.mail-archive.com/solr-user@lucene.apache.org/msg31590.html -->
-   <field name="id" type="string" indexed="true" stored="true" multiValued="false" />
+   <field name="id" type="string" indexed="true" stored="true" required="true" />
    <field name="key" type="string" indexed="true" stored="true" multiValued="false" />
 
    <!--uncomment this to generate an automatically created hash ID-->
@@ -137,6 +137,7 @@
    <field name="content_type" type="string" indexed="true" stored="true" multiValued="true"/>
    <field name="last_modified" type="date" indexed="true" stored="true"/>
    <field name="links" type="string" indexed="true" stored="true" multiValued="true"/>
+   <field name="fullText" type="text_general" indexed="true" stored="false" multiValued="false"/>
 
    <!-- Main body of document extracted by SolrCell.
         NOTE: This field is not indexed by default, since it is also copied to "text"
@@ -224,6 +225,9 @@
 
    <!-- Copy all fields to zot_ -->
    <copyField source="*" dest="zot_*"/>
+
+   <!-- Copy all to text -->
+   <copyField source="*" dest="text"/>
    
  </fields>
 
@@ -231,7 +235,7 @@
  <!-- Field to use to determine and enforce document uniqueness. 
       Unless this field is marked with required="false", it will be a required field
    -->
- <uniqueKey>key</uniqueKey>
+ <uniqueKey>id</uniqueKey>
 
  <!-- DEPRECATED: The defaultSearchField is consulted by various query parsers when
   parsing a query string that isn't explicit about the field.  Machine (non-user)
