@@ -109,8 +109,8 @@
 
    <!--uncomment this to create hash id based on linkURL, then linkTitle-->
    <!-- read more here: http://www.mail-archive.com/solr-user@lucene.apache.org/msg31590.html -->
-   <field name="id" type="string" indexed="true" stored="true" required="true" />
-   <field name="key" type="string" indexed="true" stored="true" multiValued="false" />
+   <!-- primary key -->
+   <field name="id" type="string" indexed="true" stored="true" required="true"/>   
 
    <!--uncomment this to generate an automatically created hash ID-->
    <!-- <field name="id" type="uuid" indexed="true" stored="true" required="true"/> -->
@@ -137,7 +137,8 @@
    <field name="content_type" type="string" indexed="true" stored="true" multiValued="true"/>
    <field name="last_modified" type="date" indexed="true" stored="true"/>
    <field name="links" type="string" indexed="true" stored="true" multiValued="true"/>
-   <field name="fullText" type="text_general" indexed="true" stored="false" multiValued="false"/>
+   <field name="fullText" type="text_general" indexed="true" stored="true" />
+   <field name="key" type="string" indexed="true" stored="true" multiValued="true" />
 
    <!-- Main body of document extracted by SolrCell.
         NOTE: This field is not indexed by default, since it is also copied to "text"

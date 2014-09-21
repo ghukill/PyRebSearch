@@ -400,7 +400,11 @@ firstName: "Andrew"
 
 @app.route('/fullSolrIndex')
 def fullSolrIndex():
-	pass
+	# instantiate Dropbox client
+	access_token = session['access_token']
+	client = dropbox.client.DropboxClient(access_token)
+
+
 	# get all Zotero citation objects with Risearch	
 	# Eulfedora get_subjects approach, could just as easily use sparql_query
 	zot_citations = fedora_handle.risearch.get_subjects("fedora-rels-ext:isMemberOfCollection","fedora:RebSearch:collection-ZoteroCitation")	
@@ -464,15 +468,32 @@ def fullSolrIndex():
 			# set solr ID		
 			prefixed_zot_citation['id'] = prefixed_zot_citation['zot_key']		
 
+			# look for full-text
+			filename = prefixed_zot_citation['zot_extra']
+			filename = "/articles/" + filename + ".pdf"
+			print filename
+			file_handle = client.get_file(filename)
+			baseurl = "http://localhost:8080/solr/RebSearch/update/extract?&extractOnly=true"
+			files = {'file': file_handle.read()}		
+			r = requests.post(baseurl, files=files)		
+			file_contents = r.text
+			prefixed_zot_citation['fullText'] = file_contents
+
+
 		 	# index in Solr		
 			print solr_handle.update([prefixed_zot_citation], 'json', commit=False).raw_content
-
-			# hard break
+			print "GREAT SUCCESS!!!!!!!!!!!!"
+			# # hard break
 			# count += 1
 			# if count == 10:
 			# 	break
+
 		except:
 			print "could not index document."
+			# # hard break
+			# count += 1
+			# if count == 10:
+			# 	break
 
 	# # Finally, commit changes
 	print solr_handle.commit()
@@ -505,13 +526,13 @@ def fullTextIndex():
 
 	# get file from Dropbox, index in Solr
 	count = 0
-	for doc in solr_cursor.fetch(1):
+	for doc in solr_cursor.fetch(1):		
 		time.sleep(1)
 
 		document_dictionary = doc.documents[0]
 		# print document_dictionary
 
-		doc_id = doc.documents[0]['id']
+		doc_id = doc.documents[0]['id'].encode('utf-8')
 		print "Solr document id:",doc_id
 		
 		filename = doc.documents[0]['zot_extra'][0]
@@ -519,32 +540,22 @@ def fullTextIndex():
 		print "Attempting to find:",filename
 
 		# get binary data from dropbox
-		file_handle = client.get_file(filename)
+		try:
+			file_handle = client.get_file(filename)
+		except:
+			print "SKIPPING"
+			continue
 
-		index in SOlr
+		# index in SOlr
 		# use Solr's Tika Extract to strip down to text
 		baseurl = "http://localhost:8080/solr/RebSearch/update/extract?&extractOnly=true"
 		files = {'file': file_handle.read()}		
 		r = requests.post(baseurl, files=files)		
 		file_contents = r.text
 		# print file_contents
-		document_dictionary['fullText'] = file_contents
+		document_dictionary['fullText']
 
 		print solr_handle.update([document_dictionary], 'json', commit=True).raw_content
-
-		# # atomically update in solr
-		# baseurl = "http://localhost:8080/solr/RebSearch/update?commit=true"
-		# headers = {'Content-Type': 'application/json'}
-
-		# data = [{
-		# 	"id":"{doc_id}".format(doc_id=str(doc_id)),
-		# 	"fullText":{"set":file_contents},			
-		# }]		 
-		# data_json = json.dumps(data)
-		# print data_json
-		# r = requests.post(baseurl, data=data_json, headers=headers)
-		# print r.text
-
 
 		# ehand = open("full_text_success.txt","a")
 		# ehand.write("Great Success!: {filename}\n".format(filename=filename))
