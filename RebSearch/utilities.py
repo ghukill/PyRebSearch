@@ -72,3 +72,8 @@ def updateLastZotSyncDate():
 		update = [{'id':'LastZotSync','last_modified':'NOW'}]
 		result = solr_handle.update(update,'json',commit=True)
 		print result
+
+def errorLog(filename,msg):
+	fhand = open(filename,'a')
+	fhand.write("{msg}\n".format(msg=msg))
+	fhand.close()
