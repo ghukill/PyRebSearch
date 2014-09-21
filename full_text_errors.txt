@@ -1,4 +1,0 @@
-Could not find or full-text index in Solr: /articles/Wilson_1989.pdf
-Could not find or full-text index in Solr: /articles/Thomas_etal_1981.pdf
-Could not find or full-text index in Solr: /articles/Dobratz_etal_2007.pdf
-Could not find or full-text index in Solr: /articles/Lagoze_Van de Sompel_2007.pdf
