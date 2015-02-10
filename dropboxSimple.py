@@ -2,8 +2,7 @@
 import dropbox
 
 # Get your app key and secret from the Dropbox developer website
-app_key = 't3qv21cc38s3vaj'
-app_secret = 'u5y06ulvpowevgn'
+
 
 flow = dropbox.client.DropboxOAuth2FlowNoRedirect(app_key, app_secret)
 
